@@ -67,3 +67,10 @@ for response in responses:
 
 print(f"Latitude: {responses[0].Latitude()}, Longitude: {responses[0].Longitude()}")
 print(f"Latitude: {responses[1].Latitude()}, Longitude: {responses[1].Longitude()}")
+time = range(
+    responses[0].Hourly().Time(),
+    responses[0].Hourly().TimeEnd(),
+    responses[0].Hourly().Interval(),
+)
+for x in time:
+    print(pd.to_datetime(x, unit="s"))
