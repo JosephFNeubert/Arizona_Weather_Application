@@ -6,6 +6,7 @@ from dotenv import load_dotenv, dotenv_values
 # Import OpenMeteo along with other relevant API packages
 import openmeteo_requests
 import pandas as pd
+import numpy as np
 import requests_cache
 from retry_requests import retry
 
@@ -37,13 +38,28 @@ responses = openMeteo.weather_api(os.getenv("URL"), params=params)
 
 latitudes = []
 longitudes = []
+elevations = []
+hourlyTemperatures = []
+hourlyHumidities = []
+hourlyPrecipitations = []
+hourlyPrecipitationProbs = []
 currentTemperature = []
 currentRelativeHumidity = []
 currentPrecipitation = []
 for response in responses:
+    # Each city location details
     latitudes.append(response.Latitude())
     longitudes.append(response.Longitude())
+    elevations.append(response.Elevation())
 
+    # Each city hourly temperature, humidity, precipitation, and precipitation probability conditions
+    hourly = response.Hourly()
+    hourlyTemperatures.append(hourly.Variables(0).ValuesAsNumpy())
+    hourlyHumidities.append(hourly.Variables(1).ValuesAsNumpy())
+    hourlyPrecipitations.append(hourly.Variables(2).ValuesAsNumpy())
+    hourlyPrecipitationProbs.append(hourly.Variables(3).ValuesAsNumpy())
+
+    # Each city current temperature, humidity, and precipitation conditions
     current = response.Current()
     currentTemperature.append(current.Variables(0).Value())
     currentRelativeHumidity.append(current.Variables(1).Value())
