@@ -13,11 +13,12 @@ from retry_requests import retry
 cache_session = requests_cache.CachedSession(".cache", expire_after=3600)
 retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
 openMeteo = openmeteo_requests.Client(session=retry_session)
-load_dotenv()
+load_dotenv()  # Parse .env for API URL
 
+# Establish Open-Meteo URL and parameters for API calls
 url = os.getenv("URL")
 params = {
-    # Locations in Order: Phoenix, Prescott
+    # *Locations in Order: Phoenix, Prescott*
     "latitude": [33.448206, 34.541246],
     "longitude": [-112.073789, -112.469394],
     # Hourly and current conditions
@@ -28,9 +29,25 @@ params = {
         "precipitation_probability",
     ],
     "current": ["temperature_2m", "relative_humidity_2m", "precipitation"],
+    "temperature_unit": "fahrenheit",
 }
 
+# Call Open-Meteo API and store in responses list
 responses = openMeteo.weather_api(os.getenv("URL"), params=params)
+
+latitudes = []
+longitudes = []
+currentTemperature = []
+currentRelativeHumidity = []
+currentPrecipitation = []
+for response in responses:
+    latitudes.append(response.Latitude())
+    longitudes.append(response.Longitude())
+
+    current = response.Current()
+    currentTemperature.append(current.Variables(0).Value())
+    currentRelativeHumidity.append(current.Variables(1).Value())
+    currentPrecipitation.append(current.Variables(2).Value())
 
 print(f"Latitude: {responses[0].Latitude()}, Longitude: {responses[0].Longitude()}")
 print(f"Latitude: {responses[1].Latitude()}, Longitude: {responses[1].Longitude()}")
