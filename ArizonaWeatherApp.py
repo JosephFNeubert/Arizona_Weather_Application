@@ -43,6 +43,7 @@ hourlyTemperatures = []
 hourlyHumidities = []
 hourlyPrecipitations = []
 hourlyPrecipitationProbs = []
+hourlyTimeIntervals = []
 currentTemperature = []
 currentRelativeHumidity = []
 currentPrecipitation = []
@@ -58,6 +59,16 @@ for response in responses:
     hourlyHumidities.append(hourly.Variables(1).ValuesAsNumpy())
     hourlyPrecipitations.append(hourly.Variables(2).ValuesAsNumpy())
     hourlyPrecipitationProbs.append(hourly.Variables(3).ValuesAsNumpy())
+    timesArray = np.empty((1, 168))
+    count = 0
+    for x in range(
+        hourly.Time(),
+        hourly.TimeEnd(),
+        hourly.Interval(),
+    ):
+        count += 1
+        np.insert(timesArray, x)
+    hourlyTimeIntervals.append(timesArray)
 
     # Each city current temperature, humidity, and precipitation conditions
     current = response.Current()
@@ -67,10 +78,6 @@ for response in responses:
 
 print(f"Latitude: {responses[0].Latitude()}, Longitude: {responses[0].Longitude()}")
 print(f"Latitude: {responses[1].Latitude()}, Longitude: {responses[1].Longitude()}")
-time = range(
-    responses[0].Hourly().Time(),
-    responses[0].Hourly().TimeEnd(),
-    responses[0].Hourly().Interval(),
-)
-for x in time:
-    print(pd.to_datetime(x, unit="s"))
+city1Times = hourlyTimeIntervals[0]
+# print(pd.to_datetime(city1Times[0], unit="s"))
+print(city1Times[0][0])
