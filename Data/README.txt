@@ -1,0 +1,2 @@
+This "Data" directory is vital to the functioning of the program although all its content, that being the JSON files for all 
+Arizonan cities, are ignored by .gitignore. The only visible element within this directory is this README text file.
