@@ -1,9 +1,8 @@
 # IMPORTS
 # Import OS and Dotenv to use .env
 import os
-from dotenv import load_dotenv, dotenv_values
+from dotenv import load_dotenv
 import json
-import matplotlib.pyplot as plt
 
 # Import OpenMeteo along with other relevant API packages
 import openmeteo_requests
@@ -11,6 +10,9 @@ import pandas as pd
 import numpy as np
 import requests_cache
 from retry_requests import retry
+
+# Constants
+NUMBER_OF_DATETIMES = 168
 
 # Set up the OpenMeteo API client with cache and retry on error
 cache_session = requests_cache.CachedSession(".cache", expire_after=3600)
@@ -21,7 +23,7 @@ load_dotenv()  # Parse .env for API URL
 # Establish Open-Meteo URL and parameters for API calls
 url = os.getenv("URL")
 params = {
-    # *Locations in Order: Phoenix, Prescott*
+    ### Locations in Order: Phoenix, Prescott ###
     "latitude": [33.448206, 34.541246],
     "longitude": [-112.073789, -112.469394],
     # Hourly and current conditions
@@ -38,61 +40,53 @@ params = {
 # Call Open-Meteo API and store in responses list
 responses = openMeteo.weather_api(os.getenv("URL"), params=params)
 
-# Lists for all weather values retrieved by API
-latitudes = []
-longitudes = []
-elevations = []
-hourlyTemperatures = []
-hourlyHumidities = []
-hourlyPrecipitations = []
-hourlyPrecipitationProbs = []
-hourlyTimeIntervals = []
-currentTemperature = []
-currentRelativeHumidity = []
-currentPrecipitation = []
+# City list
+cities_tuple = ("Phoenix.json", "Prescott.json")
 
-# To populate all lists
+# WIP
+iteration = 0
 for response in responses:
     # Each city location details
-    latitudes.append(response.Latitude())
-    longitudes.append(response.Longitude())
-    elevations.append(response.Elevation())
+    latitude = response.Latitude()
+    longitude = response.Longitude()
+    elevation = response.Elevation()
 
     # Each city hourly temperature, humidity, precipitation, and precipitation probability conditions
     hourly = response.Hourly()
-    hourlyTemperatures.append(hourly.Variables(0).ValuesAsNumpy())
-    hourlyHumidities.append(hourly.Variables(1).ValuesAsNumpy())
-    hourlyPrecipitations.append(hourly.Variables(2).ValuesAsNumpy())
-    hourlyPrecipitationProbs.append(hourly.Variables(3).ValuesAsNumpy())
-    hourlyData = {
-        "date": pd.date_range(
-            start=pd.to_datetime(hourly.Time(), unit="s"),
-            end=pd.to_datetime(hourly.TimeEnd(), unit="s"),
-            freq=pd.to_datetime(hourly.Interval(), unit="s"),
-            inclusive="left",
-        )
-    }
-    hourlyData["temperature_2m"] = hourlyTemperatures
-    hourlyData["relative_humidity_2m"] = hourlyHumidities
-    hourlyData["precipitation"] = hourlyPrecipitations
-    hourlyData["precipitation_probability"] = hourlyPrecipitationProbs
-    hourlyDataframe = pd.DataFrame(data=hourlyData)
+    hourlyTemperatures = hourly.Variables(0).ValuesAsNumpy()
+    hourlyHumidities = hourly.Variables(1).ValuesAsNumpy()
+    hourlyPrecipitations = hourly.Variables(2).ValuesAsNumpy()
+    hourlyPrecipitationProbs = hourly.Variables(3).ValuesAsNumpy()
+    hourlyTimeIntervals = np.empty(NUMBER_OF_DATETIMES)
+    count = 0
+    for x in range(
+        hourly.Time(),
+        hourly.TimeEnd(),
+        hourly.Interval(),
+    ):
+        hourlyTimeIntervals[count] = x
+        count += 1
 
     # Each city current temperature, humidity, and precipitation conditions
     current = response.Current()
-    currentTemperature.append(current.Variables(0).Value())
-    currentRelativeHumidity.append(current.Variables(1).Value())
-    currentPrecipitation.append(current.Variables(2).Value())
+    currentTemperature = current.Variables(0).Value()
+    currentRelativeHumidity = current.Variables(1).Value()
+    currentPrecipitation = current.Variables(2).Value()
 
+    # Create a dictionary for each city to be dumped into a json file
+    city = {}
+    city["latitude"] = latitude
+    city["longitude"] = longitude
+    city["elevation"] = elevation
+    city["currentTemperature"] = currentTemperature
+    city["currentHumidity"] = currentRelativeHumidity
+    city["currentPrecipitation"] = currentPrecipitation
+    city["hourlyTimeIntervals"] = hourlyTimeIntervals.tolist()
+    city["hourlyTemperatures"] = hourlyTemperatures.tolist()
+    city["hourlyHumidities"] = hourlyHumidities.tolist()
+    city["hourlyPrecipitations"] = hourlyPrecipitations.tolist()
+    city["hourlyPrecipitationProbabilities"] = hourlyPrecipitationProbs.tolist()
 
-# TESTING PURPOSES ONLY
-# print(f"Latitude: {responses[0].Latitude()}, Longitude: {responses[0].Longitude()}")
-# print(f"Latitude: {responses[1].Latitude()}, Longitude: {responses[1].Longitude()}")
-# city1Times = hourlyTimeIntervals[0]
-# city2Times = hourlyTimeIntervals[1]
-# print(city1Times[0])
-# print(city2Times[0])
-# print(pd.to_datetime(city1Times[0], unit="s"))
-# print(pd.to_datetime(city2Times[0], unit="s"))
-# plt.plot(hourlyDataframe["te"])
-print(hourlyDataframe)
+    with open(cities_tuple[iteration], "w") as f:
+        json.dump(city, f)
+    iteration += 1
