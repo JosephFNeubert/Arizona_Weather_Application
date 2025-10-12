@@ -10,7 +10,9 @@
 *.userosscache
 *.sln.docstates
 *.env
-*.json
+
+# For Arizona Weather App Project
+/Data/*.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -363,3 +365,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+Phoenix.json
