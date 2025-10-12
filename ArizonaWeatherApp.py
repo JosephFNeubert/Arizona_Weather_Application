@@ -2,6 +2,8 @@
 # Import OS and Dotenv to use .env
 import os
 from dotenv import load_dotenv, dotenv_values
+import json
+import matplotlib.pyplot as plt
 
 # Import OpenMeteo along with other relevant API packages
 import openmeteo_requests
@@ -36,6 +38,7 @@ params = {
 # Call Open-Meteo API and store in responses list
 responses = openMeteo.weather_api(os.getenv("URL"), params=params)
 
+# Lists for all weather values retrieved by API
 latitudes = []
 longitudes = []
 elevations = []
@@ -47,6 +50,8 @@ hourlyTimeIntervals = []
 currentTemperature = []
 currentRelativeHumidity = []
 currentPrecipitation = []
+
+# To populate all lists
 for response in responses:
     # Each city location details
     latitudes.append(response.Latitude())
@@ -59,16 +64,19 @@ for response in responses:
     hourlyHumidities.append(hourly.Variables(1).ValuesAsNumpy())
     hourlyPrecipitations.append(hourly.Variables(2).ValuesAsNumpy())
     hourlyPrecipitationProbs.append(hourly.Variables(3).ValuesAsNumpy())
-    timesArray = np.empty(168)
-    count = 0
-    for x in range(
-        hourly.Time(),
-        hourly.TimeEnd(),
-        hourly.Interval(),
-    ):
-        timesArray[count] = x
-        count += 1
-    hourlyTimeIntervals.append(timesArray)
+    hourlyData = {
+        "date": pd.date_range(
+            start=pd.to_datetime(hourly.Time(), unit="s"),
+            end=pd.to_datetime(hourly.TimeEnd(), unit="s"),
+            freq=pd.to_datetime(hourly.Interval(), unit="s"),
+            inclusive="left",
+        )
+    }
+    hourlyData["temperature_2m"] = hourlyTemperatures
+    hourlyData["relative_humidity_2m"] = hourlyHumidities
+    hourlyData["precipitation"] = hourlyPrecipitations
+    hourlyData["precipitation_probability"] = hourlyPrecipitationProbs
+    hourlyDataframe = pd.DataFrame(data=hourlyData)
 
     # Each city current temperature, humidity, and precipitation conditions
     current = response.Current()
@@ -76,12 +84,15 @@ for response in responses:
     currentRelativeHumidity.append(current.Variables(1).Value())
     currentPrecipitation.append(current.Variables(2).Value())
 
-print(f"Latitude: {responses[0].Latitude()}, Longitude: {responses[0].Longitude()}")
-print(f"Latitude: {responses[1].Latitude()}, Longitude: {responses[1].Longitude()}")
-city1Times = hourlyTimeIntervals[0]
-city2Times = hourlyTimeIntervals[1]
+
+# TESTING PURPOSES ONLY
+# print(f"Latitude: {responses[0].Latitude()}, Longitude: {responses[0].Longitude()}")
+# print(f"Latitude: {responses[1].Latitude()}, Longitude: {responses[1].Longitude()}")
+# city1Times = hourlyTimeIntervals[0]
+# city2Times = hourlyTimeIntervals[1]
+# print(city1Times[0])
+# print(city2Times[0])
 # print(pd.to_datetime(city1Times[0], unit="s"))
-print(city1Times[0])
-print(city2Times[0])
-print(pd.to_datetime(city1Times[0], unit="s"))
-print(pd.to_datetime(city2Times[0], unit="s"))
+# print(pd.to_datetime(city2Times[0], unit="s"))
+# plt.plot(hourlyDataframe["te"])
+print(hourlyDataframe)
