@@ -1,8 +1,8 @@
 # IMPORTS
-# Import OS and Dotenv to use .env
-import os
+# Import Dotenv to use .env
 from dotenv import load_dotenv, dotenv_values
 import json
+import streamlit as st
 
 # Import OpenMeteo along with other relevant API packages
 import openmeteo_requests
@@ -22,7 +22,7 @@ load_dotenv()  # Load .env
 dotenv_value = dotenv_values()  # Parse .env
 
 # Establish Open-Meteo URL and parameters for API calls
-url = dotenv_value["url"]
+url = dotenv_value["url"] or st.secrets.get("url")
 params = {
     ### Locations in Order: Phoenix, Prescott ###
     "latitude": [33.448206, 34.541246],
