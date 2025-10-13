@@ -22,7 +22,7 @@ load_dotenv()  # Load .env
 dotenv_value = dotenv_values()  # Parse .env
 
 # Establish Open-Meteo URL and parameters for API calls
-url = dotenv_value["url"] or st.secrets.get("url")
+url = dotenv_value["url"] or st.secrets["url"]
 params = {
     ### Locations in Order: Phoenix, Prescott ###
     "latitude": [33.448206, 34.541246],
