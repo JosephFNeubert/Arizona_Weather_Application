@@ -40,7 +40,7 @@ params = {
 }
 
 # Call Open-Meteo API and store in responses list
-responses = openMeteo.weather_api(os.getenv("URL"), params=params)
+responses = openMeteo.weather_api(url, params=params)
 
 # Cities tuple
 cities_tuple = ("Data/Phoenix.json", "Data/Prescott.json")
