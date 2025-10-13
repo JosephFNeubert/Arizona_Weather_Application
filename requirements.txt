@@ -1,0 +1,7 @@
+streamlit
+python-dotenv
+openmeteo-requests
+pandas
+numpy
+requests-cache
+retry-requests
