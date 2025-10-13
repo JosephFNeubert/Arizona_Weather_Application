@@ -1,6 +1,4 @@
 # IMPORTS
-# Import Dotenv to use .env
-from dotenv import load_dotenv, dotenv_values
 import json
 import streamlit as st
 
@@ -18,11 +16,8 @@ NUMBER_OF_DATETIMES = 168
 cache_session = requests_cache.CachedSession(".cache", expire_after=3600)
 retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
 openMeteo = openmeteo_requests.Client(session=retry_session)
-load_dotenv()  # Load .env
-dotenv_value = dotenv_values()  # Parse .env
 
 # Establish Open-Meteo URL and parameters for API calls
-# url = dotenv_value["url"] or st.secrets["url"]
 url = st.secrets["url"]
 params = {
     ### Locations in Order: Phoenix, Prescott ###
