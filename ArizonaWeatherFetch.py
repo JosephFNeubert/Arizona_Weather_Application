@@ -1,7 +1,7 @@
 # IMPORTS
 # Import OS and Dotenv to use .env
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values
 import json
 
 # Import OpenMeteo along with other relevant API packages
@@ -18,10 +18,11 @@ NUMBER_OF_DATETIMES = 168
 cache_session = requests_cache.CachedSession(".cache", expire_after=3600)
 retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
 openMeteo = openmeteo_requests.Client(session=retry_session)
-load_dotenv()  # Parse .env for API URL
+load_dotenv()  # Load .env
+dotenv_value = dotenv_values()  # Parse .env
 
 # Establish Open-Meteo URL and parameters for API calls
-url = os.getenv("URL")
+url = dotenv_value["url"]
 params = {
     ### Locations in Order: Phoenix, Prescott ###
     "latitude": [33.448206, 34.541246],
