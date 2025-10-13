@@ -1,3 +1,11 @@
+"""
+File: App.py
+Author: Joseph Neubert
+Description: Application frontend deriving data from city weather JSON files produced by ArizonaWeatherFetch.py. This app uses the
+Streamlit module for display and deployment of a webpage, and it is able to run the backend script as a subprocess upon user input.
+The webpage banner image was royalty-free and altered by me to include the overlayed text.
+"""
+
 # IMPORTS
 import streamlit as st
 import json
@@ -9,13 +17,18 @@ from ArizonaWeatherFetch import cities_tuple
 data = {}
 
 
-# Subprocess to run backend file to update JSON files
+# FUNCTION DEFINITIONS
 def generate_data() -> None:
+    """Subprocess to run backend file to update JSON files"""
     subprocess.run(["python", "ArizonaWeatherFetch.py"])
 
 
-# Graphically generate data
 def display_data(city: str) -> None:
+    """
+    Graphically generate data
+    TODO: Create an aesthetically pleasing template for this function to execute instead of a JSON dump
+    TODO: Add new elif statements in accordance with the number of cities added
+    """
     if city == "Phoenix":
         generate_data()
         with open(cities_tuple[0], "r") as f:
@@ -30,7 +43,7 @@ def display_data(city: str) -> None:
         st.text("Unable to generate weather data. Try again later...")
 
 
-# Frontend
+# FRONTEND DISPLAY
 banner = Image.open("Assets/Banner.png")
 st.image(banner, use_container_width=True)
 st.text("Please select a city to view its weather conditions.")
