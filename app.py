@@ -116,6 +116,6 @@ city_list = [
 ]
 st.image(banner, use_container_width=True)
 st.text("Please select a city to view its weather conditions.")
-city_select = st.selectbox("Select city", sorted(city_list), placeholder="Selection")
+city_select = st.selectbox("Select city", sorted(city_list))
 if st.button("Load Data"):
     display_data(city_select)
