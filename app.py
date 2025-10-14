@@ -30,23 +30,21 @@ def generate_data() -> None:
 def display_data(city: str) -> None:
     """
     Graphically generate data
-    TODO: Create an aesthetically pleasing template for this function to execute instead of a JSON dump
     TODO: Add new elif statements in accordance with the number of cities added
     """
+    # Select city JSON file
+    generate_data()
     if city == "Phoenix":
-        generate_data()
         with open(cities_tuple[0], "r") as f:
             data = json.load(f)
-        st.json(data)
 
     elif city == "Prescott":
-        generate_data()
         with open(cities_tuple[1], "r") as f:
             data = json.load(f)
-        st.json(data)
     else:
-        st.text("Unable to generate weather data. Try again later...")
+        st.text("ERROR: Unable to generate weather data. Try again later...")
 
+    # Display all data as text fields
     st.header(f"{city.upper()} WEATHER", divider="orange")
     st.subheader(":world_map: Location Details")
     st.text(f"Latitude: {data.get('latitude')}")
@@ -58,16 +56,14 @@ def display_data(city: str) -> None:
     st.subheader(":partly_sunny: Current Weather")
     st.text(f"Current Temperature: {round(data.get('currentTemperature'))}°F")
     st.text(f"Current Humidity: {round(data.get('currentHumidity'))}%")
-    st.text(f"Current Precipitation: {data.get('currentPrecipitation')} inches")
+    st.text(f"Current Precipitation: {round(data.get('currentPrecipitation'))} inches")
     st.text("")
     st.subheader(f":clock3: Hourly Weather")
-    st.text(
-        "Temperatures     Humidities     Precipitations     Precipitation Probabilities"
-    )
+    st.text("Temperatures, Humidities, Precipitations, Precipitation Probabilities")
     for interval in data.get("hourlyTimeIntervals"):
         curr_index = (data.get("hourlyTimeIntervals")).index(interval)
         st.text(
-            f"{pd.to_datetime(interval, unit='s')}: {round(data.get('hourlyTemperatures')[curr_index])}°F  |  {round(data.get('hourlyHumidities')[curr_index])}%  |  {round(data.get('hourlyPrecipitations')[curr_index], 3)} inches  |  {round(data.get('hourlyPrecipitationProbabilities')[curr_index])}%"
+            f"{pd.to_datetime(interval, unit='s')}  —  {round(data.get('hourlyTemperatures')[curr_index])}°F,   {round(data.get('hourlyHumidities')[curr_index])}% humidity,   {round(data.get('hourlyPrecipitations')[curr_index], 3)} inches of precipitation,   {round(data.get('hourlyPrecipitationProbabilities')[curr_index])}% precipitation probability"
         )
 
 
