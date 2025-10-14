@@ -11,7 +11,7 @@
 *.sln.docstates
 
 # For Arizona Weather App Project
-/Data/*.json
+#/Data/*.json
 /.streamlit/
 
 # User-specific files (MonoDevelop/Xamarin Studio)

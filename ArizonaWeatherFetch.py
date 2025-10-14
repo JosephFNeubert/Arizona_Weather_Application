@@ -100,3 +100,4 @@ for response in responses:
     with open(cities_tuple[iteration], "w") as f:
         json.dump(city, f)
     iteration += 1
+print(pd.to_datetime(city["hourlyTimeIntervals"][0], unit="s"))
