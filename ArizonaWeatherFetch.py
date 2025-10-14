@@ -30,10 +30,34 @@ openMeteo = openmeteo_requests.Client(session=retry_session)
 # Establish Open-Meteo URL and parameters for API calls
 url = st.secrets["url"]
 params = {
-    ### Locations in Order: Phoenix, Prescott ###
-    # TODO: Add more cities (their latitudes and longitudes)
-    "latitude": [33.448206, 34.541246],
-    "longitude": [-112.073789, -112.469394],
+    ### Locations in Order: Phoenix (Metro), Prescott, Flagstaff, Tucson, Sedona, Payson, Page, Yuma, Lake Havasu City, Casa Grande ###
+    #
+    # Add more cities here (their latitudes and longitudes)
+    #
+    "latitude": [
+        33.448206,
+        34.541246,
+        35.198243,
+        32.254004,
+        34.863726,
+        34.230812,
+        36.914891,
+        32.693005,
+        34.477682,
+        32.879606,
+    ],
+    "longitude": [
+        -112.073789,
+        -112.469394,
+        -111.652078,
+        -110.971988,
+        -111.796931,
+        -111.325100,
+        -111.455649,
+        -114.627744,
+        -114.319913,
+        -111.740032,
+    ],
     # Hourly and current conditions
     "hourly": [
         "temperature_2m",
@@ -50,8 +74,21 @@ params = {
 responses = openMeteo.weather_api(url, params=params)
 
 # File path to the data for each city
-# TODO: Include added cities into this tuple
-cities_tuple = ("Data/Phoenix.json", "Data/Prescott.json")
+#
+# Include added cities into this tuple
+#
+cities_tuple = (
+    "Data/Phoenix.json",
+    "Data/Prescott.json",
+    "Data/Flagstaff.json",
+    "Data/Tucson.json",
+    "Data/Sedona.json",
+    "Data/Payson.json",
+    "Data/Page.json",
+    "Data/Yuma.json",
+    "Data/Lake-Havasu-City.json",
+    "Data/Casa-Grande.json",
+)
 
 # Each API response corresponds to one city's data
 iteration = 0
@@ -100,4 +137,3 @@ for response in responses:
     with open(cities_tuple[iteration], "w") as f:
         json.dump(city, f)
     iteration += 1
-print(pd.to_datetime(city["hourlyTimeIntervals"][0], unit="s"))

@@ -23,16 +23,16 @@ data = {}
 
 # FUNCTION DEFINITIONS
 def generate_data() -> None:
-    """Subprocess to run backend file to update JSON files"""
+    """Subprocess to run backend file to update JSON files."""
     subprocess.run(["python", "ArizonaWeatherFetch.py"])
 
 
 def display_data(city: str) -> None:
-    """
-    Graphically generate data
-    TODO: Add new elif statements in accordance with the number of cities added
-    """
+    """Load and display data from JSON files with various stylized text fields."""
     # Select city JSON file
+    #
+    # Add new cities to if block here
+    #
     generate_data()
     if city == "Phoenix":
         with open(cities_tuple[0], "r") as f:
@@ -41,6 +41,39 @@ def display_data(city: str) -> None:
     elif city == "Prescott":
         with open(cities_tuple[1], "r") as f:
             data = json.load(f)
+
+    elif city == "Flagstaff":
+        with open(cities_tuple[2], "r") as f:
+            data = json.load(f)
+
+    elif city == "Tucson":
+        with open(cities_tuple[3], "r") as f:
+            data = json.load(f)
+
+    elif city == "Sedona":
+        with open(cities_tuple[4], "r") as f:
+            data = json.load(f)
+
+    elif city == "Payson":
+        with open(cities_tuple[5], "r") as f:
+            data = json.load(f)
+
+    elif city == "Page":
+        with open(cities_tuple[6], "r") as f:
+            data = json.load(f)
+
+    elif city == "Yuma":
+        with open(cities_tuple[7], "r") as f:
+            data = json.load(f)
+
+    elif city == "Lake Havasu City":
+        with open(cities_tuple[8], "r") as f:
+            data = json.load(f)
+
+    elif city == "Casa Grande":
+        with open(cities_tuple[9], "r") as f:
+            data = json.load(f)
+
     else:
         st.text("ERROR: Unable to generate weather data. Try again later...")
 
@@ -69,8 +102,20 @@ def display_data(city: str) -> None:
 
 # FRONTEND DISPLAY
 banner = Image.open("Assets/Banner.png")
+city_list = [
+    "Phoenix",
+    "Prescott",
+    "Flagstaff",
+    "Tucson",
+    "Sedona",
+    "Payson",
+    "Page",
+    "Yuma",
+    "Lake Havasu City",
+    "Casa Grande",
+]
 st.image(banner, use_container_width=True)
 st.text("Please select a city to view its weather conditions.")
-city_select = st.selectbox("Select city", ["Phoenix", "Prescott"])
+city_select = st.selectbox("Select city", sorted(city_list), placeholder="Selection")
 if st.button("Load Data"):
     display_data(city_select)
