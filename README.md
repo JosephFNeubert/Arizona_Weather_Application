@@ -5,4 +5,4 @@ Frontend was created using Streamlit, and the full application was deployed via 
 ![Initial application banner and city selector](https://github.com/JosephFNeubert/Arizona_Weather_Application/blob/master/Assets/Demo1.png?raw=true)
 ![Phoenix weather data display](https://github.com/JosephFNeubert/Arizona_Weather_Application/blob/master/Assets/Demo2.png?raw=true)
 
-Website Link to View the Application: https://arizona-weather-checker.streamlit.app
+Website Link to View the Application: https://arizona-weather-checker-application.streamlit.app
