@@ -1,78 +1,62 @@
 """
 File: App.py
 Author: Joseph Neubert
-Description: Application frontend deriving data from city weather JSON files produced by ArizonaWeatherFetch.py. This app uses the
-Streamlit module for display and deployment of a webpage, and it is able to run the backend script as a subprocess upon user input.
+Description: Application frontend deriving data from a city weather list of hash maps produced by ArizonaWeatherFetch.py. This app uses
+the Streamlit module for display and deployment of a webpage, and it is able to run the principal backend function upon user input.
 The webpage banner image was royalty-free and altered by me to include the overlayed text.
 """
 
 # IMPORTS
 import streamlit as st
-import json
-import subprocess
 import pandas as pd
 from PIL import Image
-from ArizonaWeatherFetch import cities_tuple
+import ArizonaWeatherFetch
+from ArizonaWeatherFetch import weather_fetch
 
 # CONSTANT
 METERS_TO_FEET_CONVERSION = 3.28084
 
-# Declared data dictionary to be loaded by JSON file
+# Declared data dictionary to be loaded by backend
 data = {}
 
 
-# FUNCTION DEFINITIONS
-def generate_data() -> None:
-    """Subprocess to run backend file to update JSON files."""
-    subprocess.run(["python", "ArizonaWeatherFetch.py"])
-
-
 def display_data(city: str) -> None:
-    """Load and display data from JSON files with various stylized text fields."""
+    """
+    Load and display data from JSON files with various stylized text fields.
+    """
     # Select city JSON file
     #
     # Add new cities to if block here
     #
-    generate_data()
     if city == "Phoenix":
-        with open(cities_tuple[0], "r") as f:
-            data = json.load(f)
+        data = weather_fetch()[0]
 
     elif city == "Prescott":
-        with open(cities_tuple[1], "r") as f:
-            data = json.load(f)
+        data = weather_fetch()[1]
 
     elif city == "Flagstaff":
-        with open(cities_tuple[2], "r") as f:
-            data = json.load(f)
+        data = weather_fetch()[2]
 
     elif city == "Tucson":
-        with open(cities_tuple[3], "r") as f:
-            data = json.load(f)
+        data = weather_fetch()[3]
 
     elif city == "Sedona":
-        with open(cities_tuple[4], "r") as f:
-            data = json.load(f)
+        data = weather_fetch()[4]
 
     elif city == "Payson":
-        with open(cities_tuple[5], "r") as f:
-            data = json.load(f)
+        data = weather_fetch()[5]
 
     elif city == "Page":
-        with open(cities_tuple[6], "r") as f:
-            data = json.load(f)
+        data = weather_fetch()[6]
 
     elif city == "Yuma":
-        with open(cities_tuple[7], "r") as f:
-            data = json.load(f)
+        data = weather_fetch()[7]
 
     elif city == "Lake Havasu City":
-        with open(cities_tuple[8], "r") as f:
-            data = json.load(f)
+        data = weather_fetch()[8]
 
     elif city == "Casa Grande":
-        with open(cities_tuple[9], "r") as f:
-            data = json.load(f)
+        data = weather_fetch()[9]
 
     else:
         st.text("ERROR: Unable to generate weather data. Try again later...")
