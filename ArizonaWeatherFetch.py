@@ -76,6 +76,7 @@ def weather_fetch(location: int) -> list[dict]:
         "current": ["temperature_2m", "relative_humidity_2m", "precipitation"],
         "temperature_unit": "fahrenheit",
         "precipitation_unit": "inch",
+        "timezone": "auto",
     }
 
     # Call Open-Meteo API and store in responses list

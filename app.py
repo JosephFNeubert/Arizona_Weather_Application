@@ -60,26 +60,32 @@ def display_data(city: str) -> None:
     else:
         st.text("ERROR: Unable to generate weather data. Try again later...")
 
-    # Display all data as text fields
+    # Display all data as markdown text fields
     st.header(f"{city.upper()} WEATHER", divider="orange")
     st.subheader(":world_map: Location Details")
-    st.text(f"Latitude: {data.get('latitude')}")
-    st.text(f"Longitude: {data.get('longitude')}")
-    st.text(
-        f"Elevation: {round(data.get('elevation') * METERS_TO_FEET_CONVERSION, 2)} feet"
+    st.markdown(f"Latitude: **{data.get('latitude')}**")
+    st.markdown(f"Longitude: **{data.get('longitude')}**")
+    st.markdown(
+        f"Elevation: **{round(data.get('elevation') * METERS_TO_FEET_CONVERSION, 2)} feet**"
     )
     st.text("")
     st.subheader(":partly_sunny: Current Weather")
-    st.text(f"Current Temperature: {round(data.get('currentTemperature'))}°F")
-    st.text(f"Current Humidity: {round(data.get('currentHumidity'))}%")
-    st.text(f"Current Precipitation: {round(data.get('currentPrecipitation'))} inches")
+    st.markdown(f"Current Temperature: **{round(data.get('currentTemperature'))}°F**")
+    st.markdown(f"Current Humidity: **{round(data.get('currentHumidity'))}%**")
+    st.markdown(
+        f"Current Precipitation: **{round(data.get('currentPrecipitation'))} inches**"
+    )
     st.text("")
     st.subheader(f":clock3: Hourly Weather")
     st.text("Temperatures, Humidities, Precipitations, Precipitation Probabilities")
     for interval in data.get("hourlyTimeIntervals"):
         curr_index = (data.get("hourlyTimeIntervals")).index(interval)
-        st.text(
-            f"{pd.to_datetime(interval, unit='s')}  —  {round(data.get('hourlyTemperatures')[curr_index])}°F,   {round(data.get('hourlyHumidities')[curr_index])}% humidity,   {round(data.get('hourlyPrecipitations')[curr_index], 3)} inches of precipitation,   {round(data.get('hourlyPrecipitationProbabilities')[curr_index])}% precipitation probability"
+        datetime_str = pd.to_datetime(interval, unit="s").strftime("%A %b %d, %I%p")
+        if datetime_str[-4] == "0":
+            datetime_str = datetime_str[:-4] + datetime_str[-3:]
+
+        st.markdown(
+            f"{datetime_str}  —  **{round(data.get('hourlyTemperatures')[curr_index])}°F**,   **{round(data.get('hourlyHumidities')[curr_index])}% humidity**,   **{round(data.get('hourlyPrecipitations')[curr_index], 3)} inches of precipitation** with **{round(data.get('hourlyPrecipitationProbabilities')[curr_index])}%**"
         )
 
 
