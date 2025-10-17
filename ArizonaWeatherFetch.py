@@ -20,7 +20,7 @@ import streamlit as st
 NUMBER_OF_DATETIMES = 168
 
 
-def weather_fetch() -> list[dict]:
+def weather_fetch(location: int) -> list[dict]:
     """
     Principal backend function that interfaces with Open-Meteo API to produce and return cities' weather data.
     """
@@ -31,36 +31,42 @@ def weather_fetch() -> list[dict]:
 
     # Establish Open-Meteo URL and parameters for API calls
     url = st.secrets["url"]
+
+    ### Locations in Order: Phoenix (Metro), Prescott, Flagstaff, Tucson, Sedona, Payson, Page, Yuma, Lake Havasu City, Casa Grande ###
+    #
+    # Add more cities here (their latitudes and longitudes)
+    #
+    latitudes_list = [
+        33.448206,
+        34.541246,
+        35.198243,
+        32.254004,
+        34.863726,
+        34.230812,
+        36.914891,
+        32.693005,
+        34.477682,
+        32.879606,
+    ]
+    longitudes_list = [
+        -112.073789,
+        -112.469394,
+        -111.652078,
+        -110.971988,
+        -111.796931,
+        -111.325100,
+        -111.455649,
+        -114.627744,
+        -114.319913,
+        -111.740032,
+    ]
+
+    # Set parameters for hourly and current conditions and the particular location of the a selected city
+    latitude = latitudes_list[location]
+    longitude = longitudes_list[location]
     params = {
-        ### Locations in Order: Phoenix (Metro), Prescott, Flagstaff, Tucson, Sedona, Payson, Page, Yuma, Lake Havasu City, Casa Grande ###
-        #
-        # Add more cities here (their latitudes and longitudes)
-        #
-        "latitude": [
-            33.448206,
-            34.541246,
-            35.198243,
-            32.254004,
-            34.863726,
-            34.230812,
-            36.914891,
-            32.693005,
-            34.477682,
-            32.879606,
-        ],
-        "longitude": [
-            -112.073789,
-            -112.469394,
-            -111.652078,
-            -110.971988,
-            -111.796931,
-            -111.325100,
-            -111.455649,
-            -114.627744,
-            -114.319913,
-            -111.740032,
-        ],
-        # Hourly and current conditions
+        "latitude": latitude,
+        "longitude": longitude,
         "hourly": [
             "temperature_2m",
             "relative_humidity_2m",
@@ -73,52 +79,48 @@ def weather_fetch() -> list[dict]:
     }
 
     # Call Open-Meteo API and store in responses list
-    responses = openMeteo.weather_api(url, params=params)
+    response = openMeteo.weather_api(url, params=params)
 
     # Each API response corresponds to one city's data
-    iteration = 0
-    cities_list = []
-    for response in responses:
-        # Each city location details
-        latitude = response.Latitude()
-        longitude = response.Longitude()
-        elevation = response.Elevation()
+    # Each city location details
+    latitude = response[0].Latitude()
+    longitude = response[0].Longitude()
+    elevation = response[0].Elevation()
 
-        # Each city hourly temperature, humidity, precipitation, and precipitation probability conditions
-        hourly = response.Hourly()
-        hourlyTemperatures = hourly.Variables(0).ValuesAsNumpy()
-        hourlyHumidities = hourly.Variables(1).ValuesAsNumpy()
-        hourlyPrecipitations = hourly.Variables(2).ValuesAsNumpy()
-        hourlyPrecipitationProbs = hourly.Variables(3).ValuesAsNumpy()
-        hourlyTimeIntervals = np.empty(NUMBER_OF_DATETIMES)
-        count = 0
-        for x in range(
-            hourly.Time(),
-            hourly.TimeEnd(),
-            hourly.Interval(),
-        ):
-            hourlyTimeIntervals[count] = x
-            count += 1
+    # Each city hourly temperature, humidity, precipitation, and precipitation probability conditions
+    hourly = response[0].Hourly()
+    hourlyTemperatures = hourly.Variables(0).ValuesAsNumpy()
+    hourlyHumidities = hourly.Variables(1).ValuesAsNumpy()
+    hourlyPrecipitations = hourly.Variables(2).ValuesAsNumpy()
+    hourlyPrecipitationProbs = hourly.Variables(3).ValuesAsNumpy()
+    hourlyTimeIntervals = np.empty(NUMBER_OF_DATETIMES)
+    count = 0
+    for x in range(
+        hourly.Time(),
+        hourly.TimeEnd(),
+        hourly.Interval(),
+    ):
+        hourlyTimeIntervals[count] = x
+        count += 1
 
-        # Each city current temperature, humidity, and precipitation conditions
-        current = response.Current()
-        currentTemperature = current.Variables(0).Value()
-        currentRelativeHumidity = current.Variables(1).Value()
-        currentPrecipitation = current.Variables(2).Value()
+    # Each city current temperature, humidity, and precipitation conditions
+    current = response[0].Current()
+    currentTemperature = current.Variables(0).Value()
+    currentRelativeHumidity = current.Variables(1).Value()
+    currentPrecipitation = current.Variables(2).Value()
 
-        # Create a dictionary for each city to be dumped into a JSON file
-        city = {}
-        city["latitude"] = latitude
-        city["longitude"] = longitude
-        city["elevation"] = elevation
-        city["currentTemperature"] = currentTemperature
-        city["currentHumidity"] = currentRelativeHumidity
-        city["currentPrecipitation"] = currentPrecipitation
-        city["hourlyTimeIntervals"] = hourlyTimeIntervals.tolist()
-        city["hourlyTemperatures"] = hourlyTemperatures.tolist()
-        city["hourlyHumidities"] = hourlyHumidities.tolist()
-        city["hourlyPrecipitations"] = hourlyPrecipitations.tolist()
-        city["hourlyPrecipitationProbabilities"] = hourlyPrecipitationProbs.tolist()
+    # Create a dictionary for each city to be dumped into a JSON file
+    city = {}
+    city["latitude"] = latitude
+    city["longitude"] = longitude
+    city["elevation"] = elevation
+    city["currentTemperature"] = currentTemperature
+    city["currentHumidity"] = currentRelativeHumidity
+    city["currentPrecipitation"] = currentPrecipitation
+    city["hourlyTimeIntervals"] = hourlyTimeIntervals.tolist()
+    city["hourlyTemperatures"] = hourlyTemperatures.tolist()
+    city["hourlyHumidities"] = hourlyHumidities.tolist()
+    city["hourlyPrecipitations"] = hourlyPrecipitations.tolist()
+    city["hourlyPrecipitationProbabilities"] = hourlyPrecipitationProbs.tolist()
 
-        cities_list.append(city)
-    return cities_list
+    return city

@@ -24,39 +24,38 @@ def display_data(city: str) -> None:
     """
     Load and display data from JSON files with various stylized text fields.
     """
-    # Select city JSON file
     #
     # Add new cities to if block here
     #
     if city == "Phoenix":
-        data = weather_fetch()[0]
+        data = weather_fetch(0)
 
     elif city == "Prescott":
-        data = weather_fetch()[1]
+        data = weather_fetch(1)
 
     elif city == "Flagstaff":
-        data = weather_fetch()[2]
+        data = weather_fetch(2)
 
     elif city == "Tucson":
-        data = weather_fetch()[3]
+        data = weather_fetch(3)
 
     elif city == "Sedona":
-        data = weather_fetch()[4]
+        data = weather_fetch(4)
 
     elif city == "Payson":
-        data = weather_fetch()[5]
+        data = weather_fetch(5)
 
     elif city == "Page":
-        data = weather_fetch()[6]
+        data = weather_fetch(6)
 
     elif city == "Yuma":
-        data = weather_fetch()[7]
+        data = weather_fetch(7)
 
     elif city == "Lake Havasu City":
-        data = weather_fetch()[8]
+        data = weather_fetch(8)
 
     elif city == "Casa Grande":
-        data = weather_fetch()[9]
+        data = weather_fetch(9)
 
     else:
         st.text("ERROR: Unable to generate weather data. Try again later...")
